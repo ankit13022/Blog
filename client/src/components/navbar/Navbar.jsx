@@ -14,7 +14,7 @@ export default function Navbar() {
     <div className="top">
       <div className="topLeft">
         <i className="topIcon fa-solid fa-blog"></i>
-        <span className="tspan"> Beyond the Blog</span>
+        <span className="tspan">Blogo</span>
       </div>
       <div className="topCenter">
         <ul className="topList">
