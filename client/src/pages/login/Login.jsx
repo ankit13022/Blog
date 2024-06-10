@@ -13,10 +13,13 @@ export default function Login() {
     e.preventDefault();
     dispatch({ type: "LOGIN_START" });
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
-        username: userRef.current.value,
-        password: passwordRef.current.value,
-      });
+      const res = await axios.post(
+        "https://blogapi-tan.vercel.app/api/auth/login",
+        {
+          username: userRef.current.value,
+          password: passwordRef.current.value,
+        }
+      );
       dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
     } catch (err) {
       dispatch({ type: "LOGIN_FAILURE" });

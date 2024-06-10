@@ -13,7 +13,13 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require("multer");
 
 dotenv.config();
-app.use(cors());
+app.use(cors(
+    {
+        origin: ["https://blog-client-seven-pink.vercel.app"],
+        methods: ["POST", "GET"],
+        credentials: true
+    }
+));
 app.use(express.json());
 app.use("/images", express.static(path.join(__dirname, "/images")));
 

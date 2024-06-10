@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import "./post.css";
 
 export default function Post({ post }) {
-  const PF = "http://localhost:5000/images/";
+  const PF = "https://blogapi-tan.vercel.app/images/";
   return (
     <div className="post">
       {post.photo && <img className="postImg" src={PF + post.photo} alt="" />}
