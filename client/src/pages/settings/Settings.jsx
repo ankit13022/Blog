@@ -30,12 +30,12 @@ export default function Settings() {
       data.append("file", file);
       updatedUser.profilePic = filename;
       try {
-        await axios.post("http://localhost:5000/api/upload", data);
+        await axios.post("https://blogapi-tan.vercel.app/api/upload", data);
       } catch (err) {}
     }
     try {
       const res = await axios.put(
-        "http://localhost:5000/api/users/" + user._id,
+        "https://blogapi-tan.vercel.app/api/users/" + user._id,
         updatedUser
       );
       setSuccess(true);
