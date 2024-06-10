@@ -6,19 +6,26 @@ const authRoute = require("./routes/auth");
 const userRoute = require("./routes/users");
 const postRoute = require("./routes/posts");
 const categoryRoute = require("./routes/categories");
-const multer = require("multer");
 const path = require("path");
 const cors = require('cors');
-app.use(cors());
+const cloudinary = require('./config/cloudinary');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const multer = require("multer");
+
 dotenv.config();
+app.use(cors());
 app.use(express.json());
 app.use("/images", express.static(path.join(__dirname, "/images")));
 
 mongoose.connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-}).then(console.log("Connected to MongoDB"))
+}).then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.log(err));
+
+
+
+
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -30,17 +37,29 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-app.post("/api/upload", upload.single("file"), (req, res) => {
-    res.status(200).json("File has been uploaded");
+
+app.post("/api/upload", upload.single("file"), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+    const x = await cloudinary.uploader.upload(req.file.path)
+    console.log("cloudniry", x)
+    res.status(200).json({ imageUrl: req.file.path });
 });
+
+
+
+
+
+
+
+
 
 app.use('/api/auth', authRoute);
 app.use('/api/users', userRoute);
 app.use('/api/posts', postRoute);
 app.use('/api/categories', categoryRoute);
 
-
-
-app.listen("5000", () => {
-    console.log("server is running at port 5000");
-})
+app.listen(5000, () => {
+    console.log("Server is running at port 5000");
+});
