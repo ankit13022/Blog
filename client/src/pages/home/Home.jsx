@@ -5,16 +5,13 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import "./home.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
 export default function Home() {
   const [posts, setPosts] = useState([]);
   const { search } = useLocation();
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const res = await axios.get(
-        "https://blogapi-tan.vercel.app/api/posts" + search
-      );
+      const res = await axios.get("http://localhost:5000/api/posts" + search);
       setPosts(res.data);
     };
     fetchPosts();

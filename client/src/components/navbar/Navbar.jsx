@@ -5,7 +5,7 @@ import { Context } from "../../context/Context";
 
 export default function Navbar() {
   const { user, dispatch } = useContext(Context);
-  const PF = "https://blogapi-tan.vercel.app/images/";
+  const PF = "http://localhost:5000/images/";
 
   const handleLogout = () => {
     dispatch({ type: "LOGOUT" });
