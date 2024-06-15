@@ -9,16 +9,10 @@ const categoryRoute = require("./routes/categories");
 const path = require("path");
 const cors = require('cors');
 const cloudinary = require('./config/cloudinary');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require("multer");
 
 dotenv.config();
 app.use(cors(
-    {
-        origin: ["https://blog-client-seven-pink.vercel.app"],
-        methods: ["POST", "GET"],
-        credentials: true
-    }
 ));
 app.use(express.json());
 app.use("/images", express.static(path.join(__dirname, "/images")));
@@ -44,16 +38,58 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.post("/api/upload", upload.single("file"), async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' });
+// app.post("/api/upload", upload.single("file"), async (req, res) => {
+//     if (!req.file) {
+//         return res.status(400).json({ error: 'No file uploaded' });
+//     }
+//     const x = await cloudinary.uploader.upload(req.file.path)
+//     console.log("cloudniry", x)
+//     res.status(200).json({ imageUrl: req.file.path });
+// });
+const uploadOnCloudinary = async (localFilePath) => {
+    try {
+        if (!localFilePath) {
+            throw new Error("No file path provided");
+        }
+        // Upload the file to Cloudinary
+        const response = await cloudinary.uploader.upload(localFilePath, {
+            resource_type: "auto"
+        });
+        // File has been uploaded successfully
+        console.log("File uploaded to Cloudinary: ", response.url);
+        // Remove the local file
+        fs.unlinkSync(localFilePath);
+        return response;
+    } catch (error) {
+        // Remove the local file if it exists
+        if (fs.existsSync(localFilePath)) {
+            fs.unlinkSync(localFilePath);
+        }
+        console.error("Cloudinary upload failed: ", error.message);
+        throw new Error("Cloudinary upload failed");
     }
-    const x = await cloudinary.uploader.upload(req.file.path)
-    console.log("cloudniry", x)
-    res.status(200).json({ imageUrl: req.file.path });
+};
+app.post("/api/upload", upload.single('file'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        const localFilePath = req.file.path;
+        const cloudinaryResponse = await uploadOnCloudinary(localFilePath);
+
+        if (cloudinaryResponse) {
+            res.status(200).json({
+                message: "File has been uploaded to Cloudinary",
+                url: cloudinaryResponse.url,
+            });
+        } else {
+            res.status(500).json({ message: "Failed to upload file to Cloudinary" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "An error occurred during the upload process" });
+    }
 });
-
-
 
 
 
