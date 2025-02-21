@@ -11,11 +11,22 @@ export default function Home() {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const res = await axios.get("http://localhost:5000/api/posts" + search);
-      setPosts(res.data);
+      try {
+        const token = localStorage.getItem("token"); // Get token from localStorage
+        const res = await axios.get(
+          "http://localhost:5000/api/posts" + search,
+          {
+            headers: { Authorization: `Bearer ${token}` }, // Send token in request
+          }
+        );
+        setPosts(res.data);
+      } catch (err) {
+        console.error("Failed to fetch posts:", err);
+      }
     };
     fetchPosts();
   }, [search]);
+
   return (
     <>
       <Header />

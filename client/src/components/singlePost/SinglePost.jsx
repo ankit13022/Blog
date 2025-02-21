@@ -15,9 +15,12 @@ export default function SinglePost() {
   const [desc, setDesc] = useState("");
   const [updateMode, setUpdateMode] = useState(false);
 
+  // Get JWT token from user context
+  const token = user?.token || localStorage.getItem("token");
+
   useEffect(() => {
     const getPost = async () => {
-      const res = await axios.get("http://localhost:5000/api/posts/" + path);
+      const res = await axios.get(`http://localhost:5000/api/posts/${path}`);
       setPost(res.data);
       setTitle(res.data.title);
       setDesc(res.data.desc);
@@ -28,21 +31,25 @@ export default function SinglePost() {
   const handleDelete = async () => {
     try {
       await axios.delete(`http://localhost:5000/api/posts/${post._id}`, {
-        data: { username: user.username },
+        headers: { Authorization: `Bearer ${token}` },
       });
       window.location.replace("/");
-    } catch (err) {}
+    } catch (err) {
+      console.error("Delete failed", err);
+    }
   };
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`http://localhost:5000/api/posts/${post._id}`, {
-        username: user.username,
-        title,
-        desc,
-      });
+      await axios.put(
+        `http://localhost:5000/api/posts/${post._id}`,
+        { title, desc },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setUpdateMode(false);
-    } catch (err) {}
+    } catch (err) {
+      console.error("Update failed", err);
+    }
   };
 
   return (
@@ -78,13 +85,10 @@ export default function SinglePost() {
         )}
         <div className="singlePostInfo">
           <span className="singlePostAuthor">
-            Author:
+            Author:{" "}
             <Link to={`/?user=${post.username}`} className="link">
-              <b> {post.username}</b>
+              <b>{post.username}</b>
             </Link>
-          </span>
-          <span className="singlePostDate">
-            {new Date(post.createdAt).toDateString()}
           </span>
         </div>
         {updateMode ? (

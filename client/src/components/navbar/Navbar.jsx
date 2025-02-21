@@ -8,6 +8,7 @@ export default function Navbar() {
   const PF = "http://localhost:5000/images/";
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
     dispatch({ type: "LOGOUT" });
   };
   return (
@@ -21,16 +22,6 @@ export default function Navbar() {
           <li className="topListItem">
             <Link className="link" to="/">
               HOME
-            </Link>
-          </li>
-          <li className="topListItem">
-            <Link className="link" to="/">
-              ABOUT
-            </Link>
-          </li>
-          <li className="topListItem">
-            <Link className="link" to="/">
-              CONTACT
             </Link>
           </li>
           <li className="topListItem">
@@ -64,7 +55,6 @@ export default function Navbar() {
             </li>
           </ul>
         )}
-        <i className="topSearchIcon fas fa-search"></i>
       </div>
     </div>
   );

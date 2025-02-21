@@ -17,6 +17,7 @@ export default function Login() {
         username: userRef.current.value,
         password: passwordRef.current.value,
       });
+      localStorage.setItem("token", res.data.token);
       dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
     } catch (err) {
       dispatch({ type: "LOGIN_FAILURE" });

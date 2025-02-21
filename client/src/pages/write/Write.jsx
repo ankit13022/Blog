@@ -8,14 +8,22 @@ export default function Write() {
   const [desc, setDesc] = useState("");
   const [file, setFile] = useState(null);
   const { user } = useContext(Context);
+  const token = user?.token || localStorage.getItem("token");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!token) {
+      console.error("No token found! User is not authenticated.");
+      return;
+    }
+
     const newPost = {
-      username: user.username,
+      username: user?.username,
       title,
       desc,
     };
+
     if (file) {
       const data = new FormData();
       const filename = Date.now() + file.name;
@@ -24,13 +32,22 @@ export default function Write() {
       newPost.photo = filename;
       try {
         await axios.post("http://localhost:5000/api/upload", data);
-      } catch (err) {}
+      } catch (err) {
+        console.log("File upload error:", err.response?.data || err.message);
+      }
     }
+
     try {
-      const res = await axios.post("http://localhost:5000/api/posts", newPost);
+      const res = await axios.post("http://localhost:5000/api/posts", newPost, {
+        headers: { Authorization: `Bearer ${token}` }, // Send token
+      });
+
       window.location.replace("/post/" + res.data._id);
-    } catch (err) {}
+    } catch (err) {
+      console.error("Post creation error:", err.response?.data || err.message);
+    }
   };
+
   return (
     <div className="write">
       {file && (
